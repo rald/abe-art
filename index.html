@@ -1,0 +1,141 @@
+<html>
+	<head>
+		<style>
+			body {
+				background-color: #000000;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="q5.js"></script>
+		<script>
+
+var palette = [
+	"#1a1c2c",
+	"#5d275d",
+	"#b13e53",
+	"#ef7d57",
+	"#ffcd75",
+	"#a7f070",
+	"#38b764",
+	"#257179",
+	"#29366f",
+	"#3b5dc9",
+	"#41a6f6",
+	"#73eff7",
+	"#f4f4f4",
+	"#94b0c2",
+	"#566c86",
+	"#333c57"
+];
+
+var canvasWidth=256;
+var canvasHeight=256;
+
+var paletteX=0;
+var paletteY=256;
+var paletteIndex=12;
+var paletteSize=16;
+
+var gridX=0;
+var gridY=0;
+var gridWidth=32;
+var gridHeight=32;
+var gridSize=8;
+
+var bitmap=new Array(gridWidth*gridHeight);
+
+function setup() {
+	createCanvas(canvasWidth,canvasHeight+32);
+
+	for(var i=0;i<gridWidth*gridHeight;i++) {
+		bitmap[i]=0;
+	}
+}
+
+function draw() {
+	background(0);
+
+	DrawBitmap();
+	DrawGrid();
+	DrawPalette();
+
+	DrawPen();	
+}
+
+function DrawBitmap() {
+	for(var i=0;i<gridWidth*gridHeight;i++) {
+		var x=i%gridWidth*gridSize+gridX;
+		var y=Math.floor(i/gridWidth)*gridSize+gridY;
+		noStroke();
+		fill(palette[bitmap[i]]);
+		square(x,y,gridSize);		
+	}		
+}
+
+function DrawGrid() {
+	stroke(palette[12]);
+	for(i=0;i<=gridWidth;i++) {
+		line(i*gridSize,gridY,i*gridSize,gridHeight*gridSize);
+	}
+	for(j=0;j<=gridHeight;j++) {
+		line(gridX,j*gridSize,gridWidth*gridSize,j*gridSize);
+	}
+}
+
+function DrawPalette() {
+	var x,y;
+
+	for(var i=0;i<palette.length;i++) {	
+		x=i%8;
+		y=Math.floor(i/8);
+		if(	mouseIsPressed && 
+				inrect(
+					mouseX,mouseY,
+					x*paletteSize+paletteX,y*paletteSize+paletteY,
+					paletteSize,paletteSize
+				)
+		) {
+			paletteIndex=i;
+			break;
+		}
+	}
+
+	for(var i=0;i<palette.length;i++) {	
+		x=paletteIndex%(palette.length/2);
+		y=Math.floor(paletteIndex/(palette.length/2));
+		stroke(palette[12]);
+		noFill();
+		square(x*paletteSize,y*paletteSize+canvasHeight,paletteSize);
+
+		x=i%(palette.length/2);
+		y=Math.floor(i/(palette.length/2));
+		noStroke();
+		fill(palette[i]);
+		square(x*paletteSize+2,y*paletteSize+canvasHeight+2,16-2*2);
+	}
+	
+}
+
+function DrawPen() {
+	if(	mouseIsPressed && 
+			inrect(
+				mouseX,mouseY,
+				gridX,gridY,
+				gridWidth*gridSize,gridHeight*gridSize
+			)
+	) {
+		var x=Math.floor((mouseX-gridX)/gridSize);
+		var y=Math.floor((mouseY-gridY)/gridSize);
+		bitmap[y*gridWidth+x]=paletteIndex;
+	}
+}
+
+function inrect(x,y,rx,ry,rw,rh) {
+	return x>=rx && x<=rx+rw && y>=ry && y<=ry+rh; 
+}
+
+		</script>
+	</body>
+</html>
+
